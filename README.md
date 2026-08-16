@@ -96,26 +96,30 @@ git clone https://github.com/hsliuping/TradingAgents-CN.git
 
 ---
 
-## 本地更新 → 推送到 GitHub（同步）
+## 自动同步（推荐：有更新就推送）
 
-本仓库就是日常工作的工作区，改技能 / 改脚本后一键推送：
+后台守护脚本 `auto_sync.ps1` 会**自动检测本地改动并 commit + push**，无需手动操作。安装为开机自启：
 
 ```powershell
-.\sync.ps1 "更新说明"
+.\install_auto_sync.ps1              # 注册开机自启 + 立即启动（后台隐藏运行）
+.\install_auto_sync.ps1 -Uninstall   # 取消自动同步
 ```
 
-或手动执行：
+工作方式：
+- 每 30 秒轮询一次工作区改动
+- 改动持续 60 秒无新变化后自动 `git add -A → commit → pull --rebase → push`
+- 含 `pull --rebase`：多台机器共用时自动合并远端更新，避免推送冲突
+- 同步日志：`logs/auto_sync.log`（已 gitignore，不会上传）
+- 提交信息格式：`auto: 自动同步 文件名...`
+
+> 注意：自动同步会提交所有**未被 gitignore 排除**的改动。个人数据（`持仓.xls`/`output/`/`api.txt` 等）已全部排除，不会上传。
+
+## 手动同步（备用）
 
 ```powershell
-git add -A
-git commit -m "更新说明"
-git push
+.\sync.ps1 "更新说明"    # 一键 add + commit + push
+git pull                 # 新机器上拉取更新
 ```
-
-新机器上拉取更新：
-
-```powershell
-git pull
 ```
 
 ---
