@@ -227,6 +227,7 @@ python .../run_all.py --keep-going                                # 失败继续
 11. [build_account_md.py](./scripts/build_account_md.py) — 生成账户分析 Markdown 版（便于复制/分享，内容同 HTML 版）
 12. [fetch_dividend.py](./scripts/fetch_dividend.py) — 红利股股息数据（股息率=最近两笔实施分红/现价，对齐同花顺TTM）→ `股息数据.json`
 13. [build_portfolio_analysis.py](./scripts/build_portfolio_analysis.py) — 持仓+自选综合分析 HTML（技术面/估值/财报含预告/AI/消息面/中美联动/红利维度/涨幅透支/**量价**/**买卖建议** → 综合评级，红利股与成长股差异化，周期/亏损股不看PEG）
+    - ⚠️ **用户约定（2026-08-16）**：**自选股不再包含 ETF**（原 588910 科创价值/588810 科创芯片/159566 储能电池已从 WATCHLIST 移除）。持仓 ETF（588170 科创半导体）保留。相关列表已同步清理：build_report.py 自选快览、fetch_price_history.py DEFAULT_TARGETS、news-analysis/fetch_news.py WATCHLIST、market_data.pkl
 14. [fetch_price_history.py](./scripts/fetch_price_history.py) — 涨幅透支分析（涨1年/涨2年/距高点 + 透支判定，防“PEG低=补泡沫”）→ `涨幅透支.json`
 15. [fetch_volume_price.py](./scripts/fetch_volume_price.py) — 量价分析（量比5/20/放量天数/量价信号）→ `量价分析.json`
 16. [fetch_peg_history.py](./scripts/fetch_peg_history.py) — ~~三年PEG~~（2026-08-16 用户删除该评价标准，仅留存档不再参与评级）
