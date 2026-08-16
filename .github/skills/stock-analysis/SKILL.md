@@ -110,6 +110,7 @@ mplfinance 需 `mpf.make_mpf_style(base_mpf_style="charles", rc={"font.sans-seri
 - 提取：营收/净利及同比增速、毛利率、ROE、EPS
 - **财务健康**：`ak.stock_zcfz_em` 资产负债率（>70%偏高/<30%稳健）、`ak.stock_xjll_em` 经营现金流
 - 计算 **PEG = PE(TTM) / 净利同比增速**；PEG<1 为低估成长；净利增速为负时 PEG 无意义
+- ⚠️ **增速口径（用户约定）**：有业绩预告时，**PEG 和报告展示的「净利同比」都用预告净利中值**（未来增速），无预告才用当期同比（标注"预告/当期"）。`build_portfolio_analysis.py` 排序表 + 卡片财报行已统一此口径（fetch_financials 集成 `ak.stock_yjyg_em` 取归母净利预告变动幅度中值）。**教训：改口径要同步所有展示列**（曾只改 PEG 忘改净利同比列）
 - **PEG 结论分级**：净利高增 + PEG<1 → 强烈关注（业绩好+估值低）；净利高增但 PEG>1 → 成长好但估值已高；净利下滑 → 基本面走弱，检查原因
 - 结合估值判断"业绩好 + 估值低"（策略第4条）
 - **美股财报**：`ak.stock_financial_us_analysis_indicator_em(symbol='NVDA')` 营收/净利/毛利率/ROE/负债率（最新年报），佐证中美联动

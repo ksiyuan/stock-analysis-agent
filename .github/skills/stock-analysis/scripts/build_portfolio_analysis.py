@@ -405,8 +405,12 @@ def build_card(code, name, typ):
     if f is not None:
         _fc = f.get("预告净利中值%")
         _fc_src = str(f.get("PEG增速源", ""))
-        _fc_txt = f" ｜ 预告净利 {s(_fc)}%" if pd.notna(_fc) else ""
-        fin_html = (f"营收同比 {s(f.get('营收同比%'))}% ｜ 净利同比 {s(f.get('净利同比%'))}%{_fc_txt} ｜ "
+        # 净利同比：业绩预告中值优先（用户约定：预告=未来增速），无预告用当期
+        if pd.notna(_fc):
+            _np_show, _np_note = _fc, "预告"
+        else:
+            _np_show, _np_note = f.get("净利同比%"), "当期"
+        fin_html = (f"营收同比 {s(f.get('营收同比%'))}% ｜ 净利同比 {s(_np_show)}%({_np_note}) ｜ "
                     f"PEG {s(f.get('PEG'),2)}{'(' + _fc_src + ')' if _fc_src else ''} ｜ "
                     f"毛利率 {s(f.get('毛利率%'))}%（{f.get('最新期','')}）")
     ai_html = "-"
@@ -587,7 +591,12 @@ for code, name, typ in WATCHLIST:
         except (ValueError, TypeError):
             peg = None
         try:
-            np_yoy = float(f["净利同比%"]) if pd.notna(f["净利同比%"]) else None
+            # 净利同比：业绩预告中值优先（用户约定），无预告用当期
+            _fc = f.get("预告净利中值%")
+            if pd.notna(_fc):
+                np_yoy = float(_fc)
+            elif pd.notna(f["净利同比%"]):
+                np_yoy = float(f["净利同比%"])
         except (ValueError, TypeError):
             np_yoy = None
     v = val.get(code, {})
