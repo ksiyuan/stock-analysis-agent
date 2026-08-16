@@ -172,9 +172,19 @@ def rating(code, sig, g=None, div=None):
     a = get_ai(code)
     f = get_fin(code)
     n = get_news(code)
-    # 消息面情绪倾向
-    good = sum(1 for _, r in n.iterrows() if r.get("情绪") == "利好")
-    bad = sum(1 for _, r in n.iterrows() if r.get("情绪") == "利空")
+    # 消息面情绪倾向（⚠️ 业绩类消息已在财报/PEG 中体现，不重复计入——用户约定 2026-08-16）
+    # 例：中国移动 3 条"中报净利下滑"利空若计入会把评级从推荐打成关注，而净利下滑财报已体现
+    EARNINGS_KW = ["业绩", "预增", "预减", "亏损", "中报", "年报", "季报", "财报",
+                   "半年报", "营收", "净利", "净利润", "利润"]
+    good = bad = 0
+    for _, r in n.iterrows():
+        title = str(r.get("标题", ""))
+        if any(k in title for k in EARNINGS_KW):
+            continue  # 业绩类消息（与财报重复）不参与情绪打分
+        if r.get("情绪") == "利好":
+            good += 1
+        elif r.get("情绪") == "利空":
+            bad += 1
     news_tilt = "利好" if good > bad else ("利空" if bad > good else "中性")
     v = val.get(code, {})
 
