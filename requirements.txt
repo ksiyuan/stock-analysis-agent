@@ -1,0 +1,17 @@
+# A 股股票分析 Agent 依赖
+# 已在 Python 3.12.10 (Windows) 上验证可用；安装用清华镜像更快：
+#   pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+akshare==1.18.91
+pandas==3.0.5
+numpy==2.5.2
+matplotlib==3.11.1
+mplfinance==0.12.10b0
+requests==2.34.2
+openpyxl==3.1.5
+lxml==6.1.1
+beautifulsoup4==4.15.0
+pymongo==4.17.0
+redis==8.1.0
+tabulate==0.10.0
+tqdm==4.70.0

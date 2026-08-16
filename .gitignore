@@ -1,0 +1,53 @@
+# ============ 敏感信息 - 绝不提交 ============
+api.txt
+*.key
+*.pem
+.env
+.env.*
+
+# ============ Python ============
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# ============ 个人账户数据（敏感，勿上传） ============
+持仓.xls
+交易记录.xls
+*持仓*.xls
+*交易*.xls
+*持仓*.csv
+*交易*.csv
+
+# ============ 生成的数据与报告（由脚本重新生成） ============
+output/
+分析报告/
+logs/
+*.pkl
+
+# ============ 本地数据库 / 缓存 ============
+dump.rdb
+appendonlydir/
+*.aof
+*.rdb
+.dbs/
+data/analysis_results/
+
+# ============ TradingAgents-CN（独立仓库，单独管理） ============
+TradingAgents-CN/
+
+# ============ 误输出目录（脚本参数被当路径时误建） ============
+--codes=*/
+2371,*/
+
+# ============ 系统 / 编辑器 ============
+.DS_Store
+Thumbs.db
+desktop.ini
+*.log
