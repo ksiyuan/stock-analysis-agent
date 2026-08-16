@@ -493,7 +493,7 @@ def build_card(code, name, typ):
     trade_html = ""
     if t is not None:
         close = float(t["close"])
-        support_f = resistance_f = hi60_f = None
+        support_f = resistance_f = cyc_f = None
         try:
             support_f = float(t["support"]) if str(t.get("support", "")) not in ("nan", "") else None
         except (ValueError, TypeError):
@@ -502,11 +502,19 @@ def build_card(code, name, typ):
             resistance_f = float(t["resistance"]) if str(t.get("resistance", "")) not in ("nan", "") else None
         except (ValueError, TypeError):
             resistance_f = None
+        # 高点回落10%线基准 = 本轮上涨高点（用户策略⑩：非60日历史高点）
+        # cycle_high 优先；老数据无该列时回退 hi60（尽量保证兼容）
         try:
-            hi60_f = float(t["hi60"]) if str(t.get("hi60", "")) not in ("nan", "") else None
+            cyc_f = float(t["cycle_high"]) if str(t.get("cycle_high", "")) not in ("nan", "") else None
         except (ValueError, TypeError):
-            hi60_f = None
-        high10 = hi60_f * 0.9 if hi60_f else None  # 高点回落10%线（用户策略卖出条件）
+            cyc_f = None
+        if cyc_f is None:
+            try:
+                hi60_f = float(t["hi60"]) if str(t.get("hi60", "")) not in ("nan", "") else None
+                cyc_f = hi60_f
+            except (ValueError, TypeError):
+                cyc_f = None
+        high10 = cyc_f * 0.9 if cyc_f else None  # 本轮上涨高点回落10%线（用户策略卖出条件）
         # 买入区间：回落支撑位附近尝试（用户策略③）
         if support_f:
             buy_txt = f"{s(support_f*0.97,2)}~{s(support_f*1.02,2)}"
@@ -644,7 +652,7 @@ html = f"""<!DOCTYPE html>
 <div class="card" style="background:#fffbeb;border-left:4px solid #d97706;">
   <b>🛡️ 卖出条件（用户策略，满足任一即考虑卖出）</b>
   <div class="muted" style="margin-top:4px;font-size:13px;">
-    ① <b>放量跌破关键支撑位</b>（量比&gt;1.2 且收盘跌破支撑）② <b>次日未收复</b> ③ <b>高点回落 10%</b>（现价跌破 60 日高点的 -10% 线）④ <b>基本面本质恶化</b>（净利大幅下滑/亏损/重大利空）。
+    ① <b>放量跌破关键支撑位</b>（量比&gt;1.2 且收盘跌破支撑）② <b>次日未收复</b> ③ <b>高点回落 10%</b>（现价跌破本轮上涨高点的 -10% 线）④ <b>基本面本质恶化</b>（净利大幅下滑/亏损/重大利空）。
     每张卡片「买卖建议」行会实时标注当前触发状态。
   </div>
 </div>

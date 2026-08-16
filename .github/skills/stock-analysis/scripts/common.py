@@ -358,6 +358,33 @@ def support_resistance(df, lookback=60):
     return round(support, 3), round(resistance, 3)
 
 
+def cycle_high(close, lookback=60, min_gain_pct=8.0, fallback_win=20):
+    """识别「本轮上涨」波段的高点（用户策略⑩：高点回落10%卖出的基准）。
+
+    关键点：用户明确「高点回落10%」的"高点"是本轮上涨创出的高点，不是60日历史高点
+    （历史高点可能很陈旧，如拆股前/数月前，用它做卖出基准会误触发或失真）。
+    算法：从后往前找最近的「波段起点」——一个局部低点（close[i]<=close[i-1]），
+    且其后最高价相对该点涨幅 >= min_gain_pct（默认8%，低于此视为横盘/小波动）。
+    本轮高点 = 该起点之后(含)的最高价。
+    回退：找不到显著起点（长期横盘/持续阴跌）时，用最近 fallback_win 日最高价，
+    避免用陈旧的历史/拆股前高点。
+    """
+    arr = close.astype(float).values
+    n = len(arr)
+    if n < 2:
+        return float(close.iloc[-1]) if n == 1 else float("nan")
+    start = None
+    for i in range(n - 2, -1, -1):
+        hi = arr[i + 1:].max()
+        gain = (hi - arr[i]) / arr[i] * 100 if arr[i] > 0 else 0
+        if gain >= min_gain_pct and (i == 0 or arr[i] <= arr[i - 1]):
+            start = i
+            break
+    if start is not None:
+        return round(float(arr[start:].max()), 3)
+    return round(float(close.tail(fallback_win).max()), 3)
+
+
 def volume_breakout(df, vol_ratio=1.5, lookback=20):
     """检测是否放量突破：当日收盘 > 20日最高(压力位) 且 量 > 20日均量*vol_ratio。
     供用户第1条策略「放量突破关键压力位→2~3成仓尝试」。返回 (是否, 说明)。"""

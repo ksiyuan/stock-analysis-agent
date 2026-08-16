@@ -89,6 +89,7 @@ def summarize(df):
     lo60 = df["low"].tail(60).min()
     support, resistance = common.support_resistance(df)
     breakout, breakout_note = common.volume_breakout(df)
+    cycle_high = common.cycle_high(df["close"])  # 本轮上涨高点（策略⑩卖出基准）
     return {
         "date": str(last["date"]), "close": round(float(last["close"]), 3),
         "chg_pct": round((last["close"] / prev["close"] - 1) * 100, 2),
@@ -104,6 +105,7 @@ def summarize(df):
         "BOLL_LOW": round(float(last["BOLL_LOW"]), 3),
         "hi60": round(float(hi60), 3), "lo60": round(float(lo60), 3),
         "pos_60": round((last["close"] - lo60) / (hi60 - lo60) * 100, 1) if hi60 > lo60 else 50.0,
+        "cycle_high": cycle_high,  # 本轮上涨高点（用户策略⑩）
         "support": support, "resistance": resistance,
         "breakout": breakout_note if breakout else "",
     }
