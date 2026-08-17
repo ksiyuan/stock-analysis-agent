@@ -28,14 +28,19 @@ if sys.stdout and hasattr(sys.stdout, "reconfigure"):
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "..", ".."))
 OUT = os.path.join(BASE, "output")
+# ⚠️ 过滤 --codes/--days 等参数，避免被当工作区路径（2026-08-17 修复）
+_pos = [a for a in sys.argv[1:] if not a.startswith("--")]
 try:
     import common
-    BASE, OUT = common.parse_cli()
+    if _pos:
+        BASE, OUT = common.parse_cli(_pos[0])
+    else:
+        BASE, OUT = common.parse_cli()
 except Exception:
-    if len(sys.argv) > 1:
-        BASE = sys.argv[1]
-    if len(sys.argv) > 2:
-        OUT = sys.argv[2]
+    if _pos:
+        BASE = _pos[0]
+    if len(_pos) > 1:
+        OUT = _pos[1]
     else:
         OUT = os.path.join(BASE, "output")
 os.makedirs(OUT, exist_ok=True)

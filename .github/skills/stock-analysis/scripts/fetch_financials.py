@@ -117,7 +117,11 @@ def analyze_a_stock(code, reports, balances, cashflows, val, forecast=None):
             continue
         r = hit.iloc[0]
         rec["name"] = r["股票简称"]
-        rec["period_latest"] = d
+        if latest is None:
+            # 只保留最新匹配报告期（REPORT_DATES 从新到旧，半年报优先）
+            # 修复 2026-08-17：原逻辑 period_latest/latest 被最后匹配期覆盖（601138 中报显示成一季报）
+            rec["period_latest"] = d
+            latest = d
         rec[f"rev_{d}"] = r.get("营业总收入-营业总收入")
         rec[f"rev_yoy_{d}"] = r.get("营业总收入-同比增长")
         rec[f"np_{d}"] = r.get("净利润-净利润")
@@ -125,7 +129,6 @@ def analyze_a_stock(code, reports, balances, cashflows, val, forecast=None):
         rec[f"roe_{d}"] = r.get("净资产收益率")
         rec[f"gross_{d}"] = r.get("销售毛利率")
         rec[f"eps_{d}"] = r.get("每股收益")
-        latest = d
     if not rec.get("name"):
         return None
 

@@ -254,10 +254,15 @@ def rating(code, sig, g=None, div=None):
                 score -= 1; reasons.append("AI卖出")
             elif "持有" in d:
                 score += 0.5; reasons.append("AI持有")
-        if news_tilt == "利好":
-            score += 0.5
-        elif news_tilt == "利空":
-            score -= 0.5
+            # ⚠️ AI 已含消息面，消息面情绪不重复计分（2026-08-17 去重）
+            if news_tilt in ("利好", "利空"):
+                reasons.append(f"消息面({news_tilt}·AI已含不重复计)")
+        else:
+            # AI 不可用时：消息面情绪作替代信号（兜底）
+            if news_tilt == "利好":
+                score += 0.5
+            elif news_tilt == "利空":
+                score -= 0.5
         if score >= 6.5:
             r, c = "重点推荐", "#16a34a"
         elif score >= 4.5:
@@ -315,12 +320,18 @@ def rating(code, sig, g=None, div=None):
         elif "持有" in d:
             score += 1
             reasons.append("AI持有")
-    if news_tilt == "利好":
-        score += 1
-        reasons.append("消息利好")
-    elif news_tilt == "利空":
-        score -= 1
-        reasons.append("消息利空")
+        # ⚠️ AI 决策已含消息面（TA 的 news analyst 已语义分析新闻）——消息面情绪不重复计分
+        #   （用户 2026-08-17 提出去重；避免同一批新闻被计两次分）
+        if news_tilt in ("利好", "利空"):
+            reasons.append(f"消息面({news_tilt}·AI已含不重复计)")
+    else:
+        # AI 不可用时：消息面情绪作替代信号（兜底）
+        if news_tilt == "利好":
+            score += 1
+            reasons.append("消息利好")
+        elif news_tilt == "利空":
+            score -= 1
+            reasons.append("消息利空")
 
     # PEG（用户定义：估值 / 未来增速；仅非周期、非亏损的成长股适用）
     # 注意：PEG 低不代表便宜——若 PE>50 且 PB>5 属情绪炒作，PEG 失真
