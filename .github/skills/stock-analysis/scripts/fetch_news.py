@@ -29,20 +29,11 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE = os.path.abspath(os.path.join(SCRIPT_DIR, "..", "..", "..", ".."))
 OUT = os.path.join(BASE, "output")
 # ⚠️ 过滤 --codes/--days 等参数，避免被当工作区路径（2026-08-17 修复）
+# 注意：不调用 common.parse_cli()（内部读 sys.argv[1] 会误吞 --codes），直接自行解析位置参数
 _pos = [a for a in sys.argv[1:] if not a.startswith("--")]
-try:
-    import common
-    if _pos:
-        BASE, OUT = common.parse_cli(_pos[0])
-    else:
-        BASE, OUT = common.parse_cli()
-except Exception:
-    if _pos:
-        BASE = _pos[0]
-    if len(_pos) > 1:
-        OUT = _pos[1]
-    else:
-        OUT = os.path.join(BASE, "output")
+if _pos:
+    BASE = _pos[0]
+    OUT = os.path.join(BASE, "output")
 os.makedirs(OUT, exist_ok=True)
 
 # 持仓个股（从持仓明细读取，ETF 跳过新闻）

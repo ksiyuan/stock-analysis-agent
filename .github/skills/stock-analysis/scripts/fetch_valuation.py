@@ -12,12 +12,12 @@ import akshare as ak
 
 import common
 
-# ⚠️ 过滤 --codes 等参数，避免被当工作区路径（2026-08-17 修复：原 common.parse_cli() 会误把 --codes 当 sys.argv[1]）
+# ⚠️ 过滤 --codes 等参数，避免被当工作区路径（2026-08-17 修复）
+# 注意：不能调用 common.parse_cli()——其内部读 sys.argv[1] 仍会误吞 --codes；直接自行解析位置参数
 _pos = [a for a in sys.argv[1:] if not a.startswith("--")]
 if _pos:
-    BASE, OUT = common.parse_cli(_pos[0])
-else:
-    BASE, OUT = common.parse_cli()
+    common.setup_paths(_pos[0])
+BASE, OUT = common.BASE, common.OUT
 
 DEFAULT_CODES = ["600030", "600036", "600941", "601872",
                  "002371", "600584", "000977", "601138", "002916", "002028"]
