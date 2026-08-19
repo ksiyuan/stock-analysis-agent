@@ -9,6 +9,8 @@
   - `.github/skills/*/SKILL.md` — 6 个技能的完整流程 + 用户交易策略 + 全部历史踩坑
   - `/memories/repo/stock-data-network.md` — 网络/编码/口径/踩坑速查（最重要）
   - `.github/instructions/股票数据获取.instructions.md` — 数据源优先级 / AkShare 接口（applyTo `**/*.py`，写 .py 时自动生效）
+  - `.github/instructions/报告输出规范.instructions.md` — 报告输出位置 / 必备内容 / 格式约定（applyTo `分析报告/**`）
+  - `.github/agents/报告审查.agent.md` — 报告交付前按用户策略核查评级逻辑的只读审查代理
 
 ## 架构：技能体系
 

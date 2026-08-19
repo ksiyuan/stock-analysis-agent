@@ -226,12 +226,13 @@ python .../run_all.py --keep-going                                # 失败继续
 7. [fetch_global_market.py](./scripts/fetch_global_market.py) — 美股/港股行情 + 中美联动补涨对比（策略第6条；支持 `--pairs=AMAT:002371:应用材料:北方华创`）
 8. [loss_review.py](./scripts/loss_review.py) — 亏损股买卖点复盘
 9. [cost_analysis.py](./scripts/cost_analysis.py) — 费用拆解、佣金费率、换手率
-10. [build_report.py](./scripts/build_report.py) — 生成 HTML 报告并打包 zip10. [build_account_doc.py](./scripts/build_account_doc.py) — 生成账户分析单文件 HTML 文档（持仓深度卡片：技术面/估值/财报/AI/消息面 + 盈亏结构/亏损复盘/交易行为/卖飞股/费用/策略建议）
-11. [build_account_md.py](./scripts/build_account_md.py) — 生成账户分析 Markdown 版（便于复制/分享，内容同 HTML 版）
-12. [fetch_dividend.py](./scripts/fetch_dividend.py) — 红利股股息数据（股息率=最近两笔实施分红/现价，对齐同花顺TTM）→ `股息数据.json`
-13. [build_portfolio_analysis.py](./scripts/build_portfolio_analysis.py) — 持仓+自选综合分析 HTML（技术面/估值/财报含预告/AI/消息面/中美联动/红利维度/涨幅透支/**量价**/**买卖建议** → 综合评级，红利股与成长股差异化，周期/亏损股不看PEG）
+10. [build_report.py](./scripts/build_report.py) — 生成 HTML 报告并打包 zip
+11. [build_account_doc.py](./scripts/build_account_doc.py) — 生成账户分析单文件 HTML 文档（持仓深度卡片：技术面/估值/财报/AI/消息面 + 盈亏结构/亏损复盘/交易行为/卖飞股/费用/策略建议）
+12. [build_account_md.py](./scripts/build_account_md.py) — 生成账户分析 Markdown 版（便于复制/分享，内容同 HTML 版）
+13. [fetch_dividend.py](./scripts/fetch_dividend.py) — 红利股股息数据（股息率=最近两笔实施分红/现价，对齐同花顺TTM）→ `股息数据.json`
+14. [build_portfolio_analysis.py](./scripts/build_portfolio_analysis.py) — 持仓+自选综合分析 HTML（技术面/估值/财报含预告/AI/消息面/中美联动/红利维度/涨幅透支/**量价**/**买卖建议** → 综合评级，红利股与成长股差异化，周期/亏损股不看PEG）
     - ⚠️ **用户约定（2026-08-16）**：**自选股不再包含 ETF**（原 588910 科创价值/588810 科创芯片/159566 储能电池已从 WATCHLIST 移除）。持仓 ETF（588170 科创半导体）保留。相关列表已同步清理：build_report.py 自选快览、fetch_price_history.py DEFAULT_TARGETS、news-analysis/fetch_news.py WATCHLIST、market_data.pkl
-14. [fetch_price_history.py](./scripts/fetch_price_history.py) — 涨幅透支分析（涨1年/涨2年/距高点 + 透支判定，防“PEG低=补泡沫”）→ `涨幅透支.json`
-15. [fetch_volume_price.py](./scripts/fetch_volume_price.py) — 量价分析（量比5/20/放量天数/量价信号）→ `量价分析.json`
-16. [fetch_peg_history.py](./scripts/fetch_peg_history.py) — ~~三年PEG~~（2026-08-16 用户删除该评价标准，仅留存档不再参与评级）
+15. [fetch_price_history.py](./scripts/fetch_price_history.py) — 涨幅透支分析（涨1年/涨2年/距高点 + 透支判定，防“PEG低=补泡沫”）→ `涨幅透支.json`
+16. [fetch_volume_price.py](./scripts/fetch_volume_price.py) — 量价分析（量比5/20/放量天数/量价信号）→ `量价分析.json`
+17. [fetch_peg_history.py](./scripts/fetch_peg_history.py) — ~~三年PEG~~（2026-08-16 用户删除该评价标准，仅留存档不再参与评级）
 公共模块：[common.py](./scripts/common.py) — 路径解析、UTF-8 控制台输出、中文字体、同花顺解析、行情获取、技术指标
