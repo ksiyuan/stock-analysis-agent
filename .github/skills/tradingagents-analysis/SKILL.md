@@ -147,7 +147,7 @@ cd "c:\Users\kongs\Documents\股票"
 
 ⚠️ 运行前必须：①后端 8000 已启动；②Worker 已启动（见上文）；③根 `.venv` 已装 redis/pymongo（`pip install redis pymongo`）
 ⚠️ **参数坑**：脚本开头用位置参数做工作区路径，`--submit/--codes` 等以 `-` 开头的参数必须用 `_pos = [a for a in sys.argv[1:] if not a.startswith("--")]` 过滤，否则会被误当路径（OUT 写错目录、复用失效、误重新提交浪费 API）
-⚠️ **并发限制**：TradingAgents 全局并发上限 3，同时只允许 3 个任务在跑，多的排队（queued）；批量分析时勿反复重复提交
+⚠️ **并发限制（重要）**：TradingAgents 全局并发上限 3，同时只允许 3 个任务在跑，多的排队（queued）；批量分析时勿反复重复提交。**单个 Worker 进程是串行的**（`app/worker.py` 的 `worker_loop` 用 `blpop` 一次取一个任务、`await process_task` 处理完才取下一个）——**要真正并发必须启动多个 Worker 进程**（最多 3 个，对应 `app/services/queue/keys.py` 的 `GLOBAL_CONCURRENT_LIMIT=3`/`DEFAULT_USER_CONCURRENT_LIMIT=3`；并发检查基于 Redis `qa:processing` 全局集合 + `qa:user_processing:<user>` 用户集合大小）。多 Worker 通过 BLPOP 竞争 `qa:ready` 队列天然并行。启动方式（后台各起一个）：`Start-Process` 或 async 终端分别运行 2~3 个 `.venv\Scripts\python.exe app\worker.py`
 ⚠️ **AI 结果解析坑（2026-08-15 踩过）**：Redis `result` 的 `analysis_result.decision` 有两种结构——持仓股用 `decision` 键、**自选股 SignalProcessor 用 `action` 键**；且 `confidence` 是 0-1 小数（0.75 要 ×100 显示为 75%）。解析必须 `decision.get("decision") or decision.get("action")` + confidence ≤1 时 ×100。修复脚本：[scripts/reparse_ai.py](./scripts/reparse_ai.py) 可重新解析全部已完成任务的决策并合并 `combined_ai.json`/`combined_analysis.json`（配合 `watchlist_tasks.json`）
 ⚠️ **Worker 崩溃恢复**：任务卡在 processing 且无 Worker 存活时，需手动 `HSET qa:task:<id> status queued` + `SREM qa:processing <id>` + `RPUSH qa:ready <id>` 重置回队列，再重启 Worker（从 TradingAgents-CN 目录、`.venv`，勿用系统 Python）；Worker 处理任务时若崩溃会丢结果，重跑即可
 ## 报告导出
